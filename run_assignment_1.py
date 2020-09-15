@@ -10,11 +10,8 @@ def main():
     parser: ArgumentParser = ArgumentParser()
     parser.add_argument('--map', type=str, required=True, help="")
     parser.add_argument('--discount', type=float, default=1.0, help="Discount")
-    parser.add_argument('--no_text', action='store_true', default=False, help="")
-    parser.add_argument('--no_val', action='store_true', default=False, help="")
-    parser.add_argument('--no_policy', action='store_true', default=False, help="")
     parser.add_argument('--rand_right', type=float, default=0.0, help="")
-    parser.add_argument('--wait', type=float, default=0.0, help="")
+    parser.add_argument('--wait', type=float, default=0.1, help="")
 
     args = parser.parse_args()
 
@@ -27,8 +24,9 @@ def main():
 
     env: FarmGridWorld = FarmGridWorld(grid, args.rand_right)
 
-    viz: InteractiveFarm = InteractiveFarm(env, agent_idx, args.discount, args.no_text, args.no_val, args.no_policy,
-                                           args.wait)
+    viz: InteractiveFarm = InteractiveFarm(env, agent_idx, args.discount, "STATE", show_policy=True, wait=args.wait,
+                                           val_min=-30)
+    viz.value_iteration()
 
     viz.mainloop()
 

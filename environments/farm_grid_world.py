@@ -51,6 +51,28 @@ class FarmGridWorld(Environment):
     def is_terminal(self, state: FarmState) -> bool:
         return state.idx == self.goal_idx
 
+    def sample_transition(self, state: FarmState, action: int) -> Tuple[FarmState, float]:
+        # 0: up, 1: down, 2: left, 3: right
+        idx_curr = state.idx
+
+        if self.is_terminal(state):
+            reward: float = 0.0
+            state_next = FarmState(idx_curr)
+        else:
+            if np.random.rand(1)[0] < self.rand_right_prob:
+                state_next = FarmState(self._get_next_idx(idx_curr, 3))
+            else:
+                state_next = FarmState(self._get_next_idx(idx_curr, action))
+
+            if state_next.idx in self.plant_idxs:
+                reward: float = -50.0
+            elif state_next.idx in self.rocks_idxs:
+                reward: float = -10.0
+            else:
+                reward: float = -1.0
+
+        return state_next, reward
+
     def state_action_dynamics(self, state: FarmState, action: int) -> Tuple[float, List[FarmState], List[float]]:
         # 0: up, 1: down, 2: left, 3: right
         idx_curr = state.idx
