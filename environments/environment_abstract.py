@@ -38,11 +38,22 @@ class Environment(ABC):
         """
         pass
 
+    @abstractmethod
     def state_action_dynamics(self, state: State, action: int) -> Tuple[float, List[State], List[float]]:
         """ Get transition dynamics for state and action
 
         @param state: state
         @param action: action
         @return: expected_reward, possible next states, transition probabilities
+        """
+        pass
+
+    @abstractmethod
+    def sample_transition(self, state: State, action: int) -> Tuple[State, float]:
+        """ Sample a transition from the environment
+
+        @param state: state
+        @param action: action
+        @return: next state, reward
         """
         pass
