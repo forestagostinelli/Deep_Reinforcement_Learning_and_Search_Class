@@ -12,8 +12,8 @@ import time
 import os
 import pickle
 
-from assignments_code_answers.assignment1 import value_iteration_step, get_action
-from assignments_code_answers.assignment2 import policy_evaluation_step, q_learning_step
+from assignments_code.assignment1 import value_iteration_step, get_action
+from assignments_code.assignment2 import policy_evaluation_step, q_learning_step
 
 
 def hsl_interp(frac):
