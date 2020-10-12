@@ -1,6 +1,5 @@
-from typing import Tuple
 import numpy as np
-from environments.farm_grid_world import FarmGridWorld, mask_to_idxs
+from environments.farm_grid_world import FarmGridWorld
 from visualizer.farm_visualizer import InteractiveFarm
 
 from argparse import ArgumentParser
@@ -23,15 +22,14 @@ def main():
 
     assert np.sum(grid == 1) == 1, "Only one agent allowed"
     assert np.sum(grid == 2) == 1, "Only one goal allowed"
-    agent_idx: Tuple[int, int] = mask_to_idxs(grid, 1)[0]
 
-    env: FarmGridWorld = FarmGridWorld(grid, args.rand_right)
+    env: FarmGridWorld = FarmGridWorld(grid.shape, args.rand_right)
 
-    viz: InteractiveFarm = InteractiveFarm(env, agent_idx, args.discount, "ACTION", show_policy=False,
+    viz: InteractiveFarm = InteractiveFarm(env, grid, args.discount, "ACTION", show_policy=False,
                                            wait=args.wait_greedy, val_min=-30)
     viz.q_learning(args.epsilon, args.learning_rate, args.wait_step)
 
-    viz.mainloop()
+    # viz.mainloop()
 
 
 if __name__ == "__main__":

@@ -9,8 +9,12 @@ def main():
     parser: ArgumentParser = ArgumentParser()
     parser.add_argument('--map', type=str, required=True, help="")
     parser.add_argument('--discount', type=float, default=1.0, help="Discount")
+    parser.add_argument('--batch_size', type=int, default=100, help="")
     parser.add_argument('--rand_right', type=float, default=0.0, help="")
-    parser.add_argument('--wait', type=float, default=0.1, help="")
+    parser.add_argument('--learning_rate', type=float, default=0.001, help="")
+    parser.add_argument('--epsilon', type=float, default=0.1, help="")
+    parser.add_argument('--wait_greedy', type=float, default=0.1, help="")
+    parser.add_argument('--wait_step', type=float, default=0.0, help="")
 
     args = parser.parse_args()
 
@@ -22,9 +26,9 @@ def main():
 
     env: FarmGridWorld = FarmGridWorld(grid.shape, args.rand_right)
 
-    viz: InteractiveFarm = InteractiveFarm(env, grid, args.discount, "STATE", show_policy=True,
-                                           wait=args.wait, val_min=-30)
-    viz.value_iteration()
+    viz: InteractiveFarm = InteractiveFarm(env, grid, args.discount, "ACTION", show_policy=False,
+                                           wait=args.wait_greedy, val_min=-30)
+    viz.deep_q_learning(args.epsilon, args.learning_rate, args.batch_size, args.wait_step)
 
     viz.mainloop()
 

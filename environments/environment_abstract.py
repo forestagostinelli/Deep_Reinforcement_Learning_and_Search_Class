@@ -1,5 +1,6 @@
-from abc import ABC, abstractmethod
 from typing import List, Tuple
+from abc import ABC, abstractmethod
+import numpy as np
 
 
 class State(ABC):
@@ -31,14 +32,6 @@ class Environment(ABC):
         pass
 
     @abstractmethod
-    def enumerate_states(self) -> List[State]:
-        """ Enumerates all possible states
-
-        :return List[State]: A list of all states
-        """
-        pass
-
-    @abstractmethod
     def state_action_dynamics(self, state: State, action: int) -> Tuple[float, List[State], List[float]]:
         """ Get transition dynamics for state and action
 
@@ -55,5 +48,13 @@ class Environment(ABC):
         @param state: state
         @param action: action
         @return: next state, reward
+        """
+        pass
+
+    @abstractmethod
+    def state_to_nnet_input(self, state: State) -> np.ndarray:
+        """
+
+        @return: state representation to nnet
         """
         pass
