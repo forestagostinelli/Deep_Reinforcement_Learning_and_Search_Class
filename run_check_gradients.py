@@ -1,4 +1,4 @@
-from assignments_code_answers.assignment3 import relu_forward, relu_backward, linear_forward, linear_backward
+from assignments_code.assignment3 import relu_forward, relu_backward, linear_forward, linear_backward
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
