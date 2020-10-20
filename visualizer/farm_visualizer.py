@@ -670,7 +670,7 @@ class InteractiveFarm:
                 break
 
             state_tens = torch.tensor(self.env.state_to_nnet_input(curr_state), device=device)
-            action_vals_state = dqn(state_tens).cpu().data.numpy()[0, :]
+            action_vals_state = dqn(state_tens.float()).cpu().data.numpy()[0, :]
 
             action: int = int(np.argmax(action_vals_state))
             curr_state, _ = self.env.sample_transition(curr_state, action)
@@ -882,7 +882,7 @@ class InteractiveFarm:
                     continue
 
                 state_tens = torch.tensor(self.env.state_to_nnet_input(state), device=device)
-                action_vals_state = dqn(state_tens).cpu().data.numpy()[0, :]
+                action_vals_state = dqn(state_tens.float()).cpu().data.numpy()[0, :]
 
                 for action in range(self.num_actions):
                     action_val: float = action_vals_state[action]
