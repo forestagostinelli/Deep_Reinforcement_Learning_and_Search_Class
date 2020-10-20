@@ -16,8 +16,6 @@ import torch.optim as optim
 from torch.optim.optimizer import Optimizer
 import torch.nn as nn
 
-from utils.nnet_utils import train_state_value_step
-
 from assignments_code.assignment1 import value_iteration_step, get_action
 from assignments_code.assignment2 import policy_evaluation_step, q_learning_step
 from assignments_code.assignment3 import get_dqn, deep_q_learning_step
@@ -686,6 +684,8 @@ class InteractiveFarm:
         print("")
 
     def supervised_state_value(self, num_steps: int):
+        from utils.nnet_utils import train_state_value_step
+
         policy: Dict[FarmState, List[float]] = {}
         for state in self.states:
             policy[state] = [1.0, 0.0, 0.0, 0.0]
