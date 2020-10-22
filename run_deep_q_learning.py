@@ -12,7 +12,7 @@ def main():
     parser.add_argument('--batch_size', type=int, default=100, help="")
     parser.add_argument('--rand_right', type=float, default=0.0, help="")
     parser.add_argument('--learning_rate', type=float, default=0.001, help="")
-    parser.add_argument('--epsilon', type=float, default=0.1, help="")
+    parser.add_argument('--epsilon', type=float, default=0.8, help="")
     parser.add_argument('--wait_greedy', type=float, default=0.1, help="")
     parser.add_argument('--wait_step', type=float, default=0.0, help="")
 
