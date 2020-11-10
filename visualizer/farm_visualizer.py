@@ -16,9 +16,10 @@ import torch.optim as optim
 from torch.optim.optimizer import Optimizer
 import torch.nn as nn
 
-from assignments_code.assignment1 import value_iteration_step, get_action
+from assignments_code_answers.assignment1 import value_iteration_step, get_action
 from assignments_code.assignment2 import policy_evaluation_step, q_learning_step
 from assignments_code.assignment3 import get_dqn, deep_q_learning_step
+from assignments_code_answers.assignment4 import AStar, FullyConnectedModel
 
 
 def hsl_interp(frac):
@@ -693,7 +694,7 @@ class InteractiveFarm:
         torch.set_num_threads(1)
         device: torch.device = torch.device("cpu")
 
-        nnet = self.env.get_state_value_nnet()
+        nnet = FullyConnectedModel(100, [100, 100, 1], [False, False, False], ["RELU", "RELU", "LINEAR"])
 
         def _update():
             nnet.eval()
@@ -745,21 +746,24 @@ class InteractiveFarm:
 
         _update()
 
-        # torch.save(nnet.state_dict(), "saved_models/supervised_small/model_state_dict.pt")
+        torch.save(nnet.state_dict(), "saved_models/assignment4/model_state_dict.pt")
 
-    def astar(self, weight: float):
+    def astar(self, g_weight: float, h_weight: float):
         # get nnet
         torch.set_num_threads(1)
         device: torch.device = torch.device("cpu")
 
-        nnet = self.env.get_state_value_nnet()
-        state_dict = torch.load("saved_models/supervised_small/model_state_dict.pt")
+        nnet = FullyConnectedModel(100, [100, 100, 1], [False, False, False], ["RELU", "RELU", "LINEAR"])
+        state_dict = torch.load("saved_models/assignment4/model_state_dict.pt")
         nnet.load_state_dict(state_dict)
         nnet.eval()
 
         # get heuristic function
         def heuristic_fn(states):
             # return np.zeros(len(states))
+            if len(states) == 0:
+                import pdb
+                pdb.set_trace()
             nnet_inputs_np_l = [self.env.state_to_nnet_input(state_i) for state_i in states]
             nnet_input_np = np.concatenate(nnet_inputs_np_l, axis=0)
             nnet_input = torch.tensor(nnet_input_np, device=device)
@@ -768,7 +772,7 @@ class InteractiveFarm:
             return -state_vals
 
         state: FarmState = FarmState(self.start_idx, self.goal_idx, self.plant_idxs, self.rocks_idxs)
-        astar = AStar(state, self.env, heuristic_fn, weight)
+        astar = AStar(state, self.env, heuristic_fn, g_weight, h_weight)
 
         grid_dim_x, grid_dim_y = self.env.grid_shape
         grid_text_astar: List[List[List]] = []
@@ -786,15 +790,16 @@ class InteractiveFarm:
             grid_text_astar.append(grid_text_rows)
 
         def _update():
-            for node in astar.instance.closed_dict.keys():
+            for node in astar.closed_dict.keys():
                 pos_i_up, pos_j_up = node.state.agent_idx
                 self.board.itemconfigure(self.grid_squares[pos_i_up][pos_j_up], fill="red")
 
-            for node in astar.instance.open_set:
+            for node in astar.open_set:
                 pos_i_up, pos_j_up = node.state.agent_idx
                 self.board.itemconfigure(self.grid_squares[pos_i_up][pos_j_up], fill="grey")
                 self.board.itemconfigure(grid_text_astar[pos_i_up][pos_j_up][0], text='g=%.1f' % node.path_cost)
-                self.board.itemconfigure(grid_text_astar[pos_i_up][pos_j_up][1], text='h=%.1f' % node.heuristic)
+                self.board.itemconfigure(grid_text_astar[pos_i_up][pos_j_up][1],
+                                         text='h=%.1f' % heuristic_fn([node.state])[0])
                 self.board.itemconfigure(grid_text_astar[pos_i_up][pos_j_up][2], text='f=%.1f' % node.cost)
 
             self.window.update()
@@ -810,7 +815,7 @@ class InteractiveFarm:
             _update()
             time.sleep(self.wait)
 
-        actions = astar.get_soln_actions()
+        actions = astar.get_soln(astar.goal_node)
 
         for action in actions:
             state = self.env.sample_transition(state, action)[0]
