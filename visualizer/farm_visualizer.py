@@ -16,10 +16,10 @@ import torch.optim as optim
 from torch.optim.optimizer import Optimizer
 import torch.nn as nn
 
-from assignments_code_answers.assignment1 import value_iteration_step, get_action
+from assignments_code.assignment1 import value_iteration_step, get_action
 from assignments_code.assignment2 import policy_evaluation_step, q_learning_step
 from assignments_code.assignment3 import get_dqn, deep_q_learning_step
-from assignments_code_answers.assignment4 import AStar, FullyConnectedModel
+from assignments_code.assignment4 import AStar, FullyConnectedModel
 
 
 def hsl_interp(frac):
