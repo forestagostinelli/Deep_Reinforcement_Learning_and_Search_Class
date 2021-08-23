@@ -1,0 +1,10 @@
+name: drlclass
+channels:
+  - defaults
+dependencies:
+  - python=3.7
+  - tk
+  - numpy
+  - pillow
+  - pytorch
+
