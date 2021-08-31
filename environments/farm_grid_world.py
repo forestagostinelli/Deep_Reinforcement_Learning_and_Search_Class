@@ -28,12 +28,15 @@ class FarmState(State):
 
 
 class FarmGridWorld(Environment):
-    def __init__(self, grid_shape: Tuple[int, int], rand_right: float):
+    def __init__(self, grid_shape: Tuple[int, int], rand_right: float, grid):
         super().__init__()
 
         self.rand_right_prob: float = rand_right
 
         self.grid_shape: Tuple[int, int] = grid_shape
+        self.goal_idx: Tuple[int, int] = mask_to_idxs(grid, 2)[0]
+        self.plant_idxs: List[Tuple[int, int]] = mask_to_idxs(grid, 3)
+        self.rocks_idxs: List[Tuple[int, int]] = mask_to_idxs(grid, 4)
 
     def get_actions(self) -> List[int]:
         return list(range(4))
@@ -106,6 +109,13 @@ class FarmGridWorld(Environment):
         assert(np.sum(probs) == 1.0)
 
         return expected_reward, states_next, probs
+
+    def sample_start_state(self) -> State:
+        agent_idx_0 = np.random.randint(0, self.grid_shape[0])
+        agent_idx_1 = np.random.randint(0, self.grid_shape[1])
+        state = FarmState((agent_idx_0, agent_idx_1), self.goal_idx, self.plant_idxs, self.rocks_idxs)
+
+        return state
 
     def states_to_nnet_input(self, state: List[FarmState]) -> np.ndarray:
         # TODO do for list
