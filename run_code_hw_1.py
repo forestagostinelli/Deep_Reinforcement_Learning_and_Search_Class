@@ -4,7 +4,7 @@ from utils import env_utils
 
 from argparse import ArgumentParser
 
-from code_hw_answers.code_hw1 import policy_iteration, value_iteration, q_learning
+from code_hw.code_hw1 import policy_iteration, value_iteration, q_learning
 
 
 def run_policy_iteration(states, env, discount, viz):
