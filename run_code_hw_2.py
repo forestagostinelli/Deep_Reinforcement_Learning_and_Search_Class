@@ -5,7 +5,7 @@ from torch import nn
 
 from argparse import ArgumentParser
 
-from code_hw_answers.code_hw2 import supervised, deep_q_learning, get_value_net, deep_vi, follow_greedy_policy
+from code_hw.code_hw2 import supervised, deep_q_learning, get_value_net, deep_vi, follow_greedy_policy
 import numpy as np
 import torch
 
