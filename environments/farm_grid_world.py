@@ -110,21 +110,49 @@ class FarmGridWorld(Environment):
 
         return expected_reward, states_next, probs
 
-    def sample_start_state(self) -> State:
-        agent_idx_0 = np.random.randint(0, self.grid_shape[0])
-        agent_idx_1 = np.random.randint(0, self.grid_shape[1])
-        state = FarmState((agent_idx_0, agent_idx_1), self.goal_idx, self.plant_idxs, self.rocks_idxs)
+    def sample_start_states(self, num_states: int) -> List[FarmState]:
+        states: List[FarmState] = []
+        for _ in range(num_states):
+            agent_idx_0 = np.random.randint(0, self.grid_shape[0])
+            agent_idx_1 = np.random.randint(0, self.grid_shape[1])
+            state = FarmState((agent_idx_0, agent_idx_1), self.goal_idx, self.plant_idxs, self.rocks_idxs)
 
-        return state
+            states.append(state)
 
-    def states_to_nnet_input(self, state: List[FarmState]) -> np.ndarray:
-        # TODO do for list
-        idx = state.agent_idx
+        return states
 
-        idx_oh = 10 * idx[0] + idx[1]
-        states_nnet = np.eye(100)[idx_oh]
+    def states_to_nnet_input(self, states: List[FarmState]) -> np.ndarray:
+        states_nnet = np.zeros((len(states), 8, 10, 10))
+        states_nnet[:, -1, :, :] = 1
+        for state_idx, state in enumerate(states):
+            agent_seen: bool = False
 
-        states_nnet = np.expand_dims(states_nnet, 0)
+            if state.goal_idx == state.agent_idx:
+                states_nnet[state_idx, :, state.goal_idx[0], state.goal_idx[1]] = np.array([0, 0, 0, 0, 1, 0, 0, 0])
+                agent_seen = True
+            else:
+                states_nnet[state_idx, :, state.goal_idx[0], state.goal_idx[1]] = np.array([0, 1, 0, 0, 0, 0, 0, 0])
+
+            for plant_idx in state.plant_idxs:
+                if state.agent_idx == plant_idx:
+                    states_nnet[state_idx, :, plant_idx[0], plant_idx[1]] = np.array([0, 0, 0, 0, 0, 1, 0, 0])
+                    agent_seen = True
+                else:
+                    states_nnet[state_idx, :, plant_idx[0], plant_idx[1]] = np.array([0, 0, 1, 0, 0, 0, 0, 0])
+
+            for rock_idx in state.rock_idxs:
+                if state.agent_idx == rock_idx:
+                    states_nnet[state_idx, :, rock_idx[0], rock_idx[1]] = np.array([0, 0, 0, 0, 0, 0, 1, 0])
+                    agent_seen = True
+                else:
+                    states_nnet[state_idx, :, rock_idx[0], rock_idx[1]] = np.array([0, 0, 0, 1, 0, 0, 0, 0])
+
+            if not agent_seen:
+                states_nnet[state_idx, :, state.agent_idx[0], state.agent_idx[1]] = np.array([1, 0, 0, 0, 0, 0, 0, 0])
+
+        states_nnet = states_nnet.astype(np.float32)
+
+        states_nnet = states_nnet.reshape((states_nnet.shape[0], -1))
 
         return states_nnet
 
