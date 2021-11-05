@@ -151,7 +151,7 @@ def main():
         costs.append(cost)
 
         print("%i/%i - cost: %i, shortest path cost: %i, "
-              "time: %.2f" % (state_idx, num_exs, cost, ctgs_shortest[state_idx], time.time() - start_time_i))
+              "time: %.2f" % (state_idx+1, num_exs, cost, ctgs_shortest[state_idx], time.time() - start_time_i))
 
     print("Avg cost: %.2f, Avg shortest path cost: %.2f "
           "Total time: %s" % (float(np.mean(costs)), float(np.mean(ctgs_shortest)), time.time() - start_time))
