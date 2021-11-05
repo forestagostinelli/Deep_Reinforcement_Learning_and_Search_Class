@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from collections import OrderedDict
 import re
 
-from code_hw_answers.code_hw3 import astar
+from code_hw.code_hw3 import astar
 import numpy as np
 import torch
 
